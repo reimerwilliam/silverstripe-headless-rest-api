@@ -74,7 +74,7 @@ class HeadlessRestController extends Controller {
                 ]);
                 $this->extend('updateNavigationPages', $navigationPages);
                 $navFields = $commonFields['navigation']['fields'];
-                $fields['Navigation'] = $this->getNavigationFields($navigationPages, $navFields);
+                $fields['navigation'] = $this->getNavigationFields($navigationPages, $navFields);
 
                 // Site config
                 $sc = SiteConfig::current_site_config();
