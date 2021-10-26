@@ -11,7 +11,7 @@ OliverNorden\HeadlessRest\HeadlessRestController:
                 link: Link
         siteConfig:
             fields:
-                Title: Title
+                title: Title
 
         SilverStripe\CMS\Model\SiteTree:
             label: Navigation
