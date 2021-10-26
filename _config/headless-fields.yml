@@ -3,12 +3,12 @@ Name: headless-rest-fields
 ---
 SilverStripe\ORM\DataObject:
   headlessFields:
-    ID: ID
+    id: ID
 SilverStripe\Assets\Image:
   headlessFields:
-    Link: Link
-    Name: Name
-    Title: Title
+    link: Link
+    name: Name
+    title: Title
 SilverStripe\CMS\Model\SiteTree:
   headlessFields:
-    Title: Title
+    title: Title
