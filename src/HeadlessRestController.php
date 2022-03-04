@@ -39,6 +39,7 @@ class HeadlessRestController extends Controller {
 
         switch ($action) {
             case 'url':
+                $this->extend('beforeUrlAction');
                 $url = $request->remaining();
                 $this->extend('updateUrl', $url);
                 $page = SiteTree::get_by_link($url);
@@ -64,6 +65,7 @@ class HeadlessRestController extends Controller {
                 break;
             
             case 'common':
+                $this->extend('beforeCommonAction');
                 if($useCache){
                     $cacheKey = 'common';
                     $this->extend('updateCommonCacheKey', $cacheKey);
@@ -94,6 +96,7 @@ class HeadlessRestController extends Controller {
                 return $this->returnJson($fields);
                 break;
             case 'sitetree':
+                $this->extend('beforeSiteTreeAction');
                 if($useCache){
                     $cacheKey = 'sitetree';
                     $this->extend('updateSiteTreeCacheKey', $cacheKey);
