@@ -64,11 +64,13 @@ class HeadlessRestController extends Controller {
                 break;
             
             case 'common':
-                $cacheKey = 'common';
-                $this->extend('updateCommonCacheKey', $cacheKey);
-                // Return cached fields if cache exists
-                if ($cache->has($cacheKey) && Versioned::get_stage() === Versioned::LIVE) {
-                    return $this->returnJson($cache->get($cacheKey));
+                if($useCache){
+                    $cacheKey = 'common';
+                    $this->extend('updateCommonCacheKey', $cacheKey);
+                    // Return cached fields if cache exists
+                    if ($cache->has($cacheKey) && Versioned::get_stage() === Versioned::LIVE) {
+                        return $this->returnJson($cache->get($cacheKey));
+                    }
                 }
 
                 $commonFields = $this->config()->headlessCommonFields;
@@ -88,7 +90,7 @@ class HeadlessRestController extends Controller {
                 $scField = $commonFields['siteConfig']['fields'];
                 $fields['siteConfig'] = $sc->getHeadlessRestFields($scField);
 
-                $cache->set($cacheKey, $fields);
+                if($useCache) $cache->set($cacheKey, $fields);
                 return $this->returnJson($fields);
                 break;
             case 'sitetree':
