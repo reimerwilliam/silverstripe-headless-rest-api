@@ -10,6 +10,7 @@ use SilverStripe\Versioned\Versioned;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Config\Config;
 
 class HeadlessRestController extends Controller {
 
