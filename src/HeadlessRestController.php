@@ -9,8 +9,11 @@ use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Versioned\Versioned;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Config\Configurable;
 
 class HeadlessRestController extends Controller {
+
+    use Configurable;
 
     const CACHE_NAMESPACE = '.headless-rest';
 
@@ -24,6 +27,8 @@ class HeadlessRestController extends Controller {
     );
 
     public function index(HTTPRequest $request) {
+
+        $useCache = Config::inst()->get('OliverNorden\HeadlessRest\HeadlessRestController', 'useCache');
 
         Versioned::choose_site_stage($request);
         $action = $request->param('action');
@@ -41,17 +46,18 @@ class HeadlessRestController extends Controller {
                 if (!$page) {
                     return $this->notFound('Page not found ' . $url);
                 }
-
-                $cacheKey = $page->getCacheKey();
-                $this->extend('updatePageCacheKey', $cacheKey);
-                // Return cached page if exists
-                if ($cacheKey && $cache->has($cacheKey) && Versioned::get_stage() === Versioned::LIVE) {
-                    return $this->returnJson($cache->get($cacheKey));
+                if($useCache){
+                    $cacheKey = $page->getCacheKey();
+                    $this->extend('updatePageCacheKey', $cacheKey);
+                    // Return cached page if exists
+                    if ($cacheKey && $cache->has($cacheKey) && Versioned::get_stage() === Versioned::LIVE) {
+                        return $this->returnJson($cache->get($cacheKey));
+                    }
                 }
 
                 // Save cache
                 $pageData = $page->HeadlessRestFields;
-                $cache->set($cacheKey, $pageData);
+                if($useCache) $cache->set($cacheKey, $pageData);
                 return $this->returnJson($pageData);
 
                 break;
@@ -85,11 +91,13 @@ class HeadlessRestController extends Controller {
                 return $this->returnJson($fields);
                 break;
             case 'sitetree':
-                $cacheKey = 'sitetree';
-                $this->extend('updateSiteTreeCacheKey', $cacheKey);
-                // Return cached fields if cache exists
-                if ($cache->has($cacheKey) && Versioned::get_stage() === Versioned::LIVE) {
-                    return $this->returnJson($cache->get($cacheKey));
+                if($useCache){
+                    $cacheKey = 'sitetree';
+                    $this->extend('updateSiteTreeCacheKey', $cacheKey);
+                    // Return cached fields if cache exists
+                    if ($cache->has($cacheKey) && Versioned::get_stage() === Versioned::LIVE) {
+                        return $this->returnJson($cache->get($cacheKey));
+                    }
                 }
 
                 $siteTreeFields = $this->config()->headlessSiteTreeFields;
@@ -98,7 +106,7 @@ class HeadlessRestController extends Controller {
                 $pages = SiteTree::get();
                 $fields['siteTree'] = $this->getSiteTreeFields($pages, $siteTreeFields);
 
-                $cache->set($cacheKey, $fields);
+                if($useCache) $cache->set($cacheKey, $fields);
                 return $this->returnJson($fields);
                 break;
             
