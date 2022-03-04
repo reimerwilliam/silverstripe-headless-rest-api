@@ -3,6 +3,7 @@ Name: headless-rest-common-fields
 ---
 
 OliverNorden\HeadlessRest\HeadlessRestController:
+    useCache: true
     headlessCommonFields:
         Navigation:
             fields:
