@@ -95,8 +95,6 @@ class HeadlessRestController extends Controller {
                 $fields['siteConfig'] = $sc->getHeadlessRestFields($scField);
 
                 if($useCache) $cache->set($cacheKey, $fields);
-                $subsiteId = SubsiteState::singleton()->getSubsiteId();
-                Injector::inst()->get(LoggerInterface::class)->info('Common request for id: ' .  $subsiteId . ", " . json_encode($fields));
                 return $this->returnJson($fields);
                 break;
             case 'sitetree':
