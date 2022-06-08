@@ -50,7 +50,8 @@ class HeadlessRestController extends Controller {
                 if (!$page) {
                     return $this->notFound('Page not found ' . $url);
                 }
-                if($useCache){
+                $useUrlCache = $useCache && gettype($useCache) === "array" && $useCache['url'] === true;
+                if($useUrlCache){
                     $cacheKey = $page->getCacheKey();
                     $this->extend('updatePageCacheKey', $cacheKey);
                     // Return cached page if exists
@@ -61,15 +62,16 @@ class HeadlessRestController extends Controller {
 
                 // Save cache
                 $pageData = $page->HeadlessRestFields;
-                if($useCache) $cache->set($cacheKey, $pageData);
+                if($useUrlCache) $cache->set($cacheKey, $pageData);
                 return $this->returnJson($pageData);
 
                 break;
             
             case 'common':
                 $this->extend('beforeCommonAction');
-                if($useCache){
-                    $cacheKey = 'common';
+                $useCommonCache = $useCache && gettype($useCache) === "array" && $useCache['common'] === true;
+                $cacheKey = 'common';
+                if ($useCommonCache) {
                     $this->extend('updateCommonCacheKey', $cacheKey);
                     // Return cached fields if cache exists
                     if ($cache->has($cacheKey) && Versioned::get_stage() === Versioned::LIVE) {
@@ -94,12 +96,13 @@ class HeadlessRestController extends Controller {
                 $scField = $commonFields['siteConfig']['fields'];
                 $fields['siteConfig'] = $sc->getHeadlessRestFields($scField);
 
-                if($useCache) $cache->set($cacheKey, $fields);
+                if ($useCommonCache) $cache->set($cacheKey, $fields);
                 return $this->returnJson($fields);
                 break;
             case 'sitetree':
                 $this->extend('beforeSiteTreeAction');
-                if($useCache){
+                $useSitetreeCache = $useCache && gettype($useCache) === "array" && $useCache['sitetree'] === true;
+                if($useSitetreeCache){
                     $cacheKey = 'sitetree';
                     $this->extend('updateSiteTreeCacheKey', $cacheKey);
                     // Return cached fields if cache exists
@@ -114,7 +117,7 @@ class HeadlessRestController extends Controller {
                 $pages = SiteTree::get();
                 $fields['siteTree'] = $this->getSiteTreeFields($pages, $siteTreeFields);
 
-                if($useCache) $cache->set($cacheKey, $fields);
+                if($useSitetreeCache) $cache->set($cacheKey, $fields);
                 return $this->returnJson($fields);
                 break;
             
