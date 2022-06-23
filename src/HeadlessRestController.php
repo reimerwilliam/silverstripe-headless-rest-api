@@ -51,11 +51,11 @@ class HeadlessRestController extends Controller {
                     return $this->notFound('Page not found ' . $url);
                 }
                 $useUrlCache = $useCache && gettype($useCache) === "array" && $useCache['url'] === true;
-                if($useUrlCache){
-                    $cacheKey = $page->getCacheKey();
-                    $this->extend('updatePageCacheKey', $cacheKey);
+                $cacheKey = $page->getCacheKey();
+                $this->extend('updatePageCacheKey', $cacheKey);
+                if($useUrlCache && $cacheKey){
                     // Return cached page if exists
-                    if ($cacheKey && $cache->has($cacheKey) && Versioned::get_stage() === Versioned::LIVE) {
+                    if ($cache->has($cacheKey) && Versioned::get_stage() === Versioned::LIVE) {
                         return $this->returnJson($cache->get($cacheKey));
                     }
                 }
@@ -71,8 +71,8 @@ class HeadlessRestController extends Controller {
                 $this->extend('beforeCommonAction');
                 $useCommonCache = $useCache && gettype($useCache) === "array" && $useCache['common'] === true;
                 $cacheKey = 'common';
-                if ($useCommonCache) {
-                    $this->extend('updateCommonCacheKey', $cacheKey);
+                $this->extend('updateCommonCacheKey', $cacheKey);
+                if ($useCommonCache  && $cacheKey) {
                     // Return cached fields if cache exists
                     if ($cache->has($cacheKey) && Versioned::get_stage() === Versioned::LIVE) {
                         return $this->returnJson($cache->get($cacheKey));
@@ -102,9 +102,9 @@ class HeadlessRestController extends Controller {
             case 'sitetree':
                 $this->extend('beforeSiteTreeAction');
                 $useSitetreeCache = $useCache && gettype($useCache) === "array" && $useCache['sitetree'] === true;
-                if($useSitetreeCache){
-                    $cacheKey = 'sitetree';
-                    $this->extend('updateSiteTreeCacheKey', $cacheKey);
+                $cacheKey = 'sitetree';
+                $this->extend('updateSiteTreeCacheKey', $cacheKey);
+                if($useSitetreeCache && $cacheKey){
                     // Return cached fields if cache exists
                     if ($cache->has($cacheKey) && Versioned::get_stage() === Versioned::LIVE) {
                         return $this->returnJson($cache->get($cacheKey));
