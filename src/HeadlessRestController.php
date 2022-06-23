@@ -62,7 +62,7 @@ class HeadlessRestController extends Controller {
 
                 // Save cache
                 $pageData = $page->HeadlessRestFields;
-                if($useUrlCache  && $cacheKey) $cache->set($cacheKey, $pageData);
+                if($useUrlCache && $cacheKey) $cache->set($cacheKey, $pageData);
                 return $this->returnJson($pageData);
 
                 break;
@@ -96,7 +96,7 @@ class HeadlessRestController extends Controller {
                 $scField = $commonFields['siteConfig']['fields'];
                 $fields['siteConfig'] = $sc->getHeadlessRestFields($scField);
 
-                if ($useCommonCache  && $cacheKey) $cache->set($cacheKey, $fields);
+                if ($useCommonCache && $cacheKey) $cache->set($cacheKey, $fields);
                 return $this->returnJson($fields);
                 break;
             case 'sitetree':
