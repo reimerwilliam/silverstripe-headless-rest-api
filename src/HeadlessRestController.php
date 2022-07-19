@@ -50,6 +50,11 @@ class HeadlessRestController extends Controller {
                 if (!$page) {
                     return $this->notFound('Page not found ' . $url);
                 }
+
+                if (!$page->canView()) {
+                    $this->httpError(403, 'Unauthorized to view page ' . $url);
+                }
+
                 $useUrlCache = $useCache && gettype($useCache) === "array" && $useCache['url'] === true;
                 $cacheKey = $page->getCacheKey();
                 $this->extend('updatePageCacheKey', $cacheKey);
@@ -66,7 +71,7 @@ class HeadlessRestController extends Controller {
                 return $this->returnJson($pageData);
 
                 break;
-            
+
             case 'common':
                 $this->extend('beforeCommonAction');
                 $useCommonCache = $useCache && gettype($useCache) === "array" && $useCache['common'] === true;
@@ -82,11 +87,14 @@ class HeadlessRestController extends Controller {
                 $commonFields = $this->config()->headlessCommonFields;
                 $fields = [];
 
-                // Navigation              
+                // Navigation
                 $navigationPages = SiteTree::get()->filter([
                     'ShowInMenus' => 1,
                     'ParentID' => 0,
                 ]);
+
+                $navigationPages = $navigationPages->filterByCallback(fn($page) => $page->canView());
+
                 $this->extend('updateNavigationPages', $navigationPages);
                 $navFields = $commonFields['navigation']['fields'];
                 $fields['navigation'] = $this->getNavigationFields($navigationPages, $navFields);
@@ -120,7 +128,7 @@ class HeadlessRestController extends Controller {
                 if($useSitetreeCache && $cacheKey) $cache->set($cacheKey, $fields);
                 return $this->returnJson($fields);
                 break;
-            
+
             default:
                 // TODO: add support for extending with custom actions
                 return $this->notFound();
